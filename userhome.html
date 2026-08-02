@@ -1,0 +1,110 @@
+{% include 'pageheader.html' %}
+
+<div class="page-content page-container" id="page-content">
+  <div class="padding" style="border: 1px solid gray; border-radius: 10px;">
+    <h3 style="text-align: center;">File Your Crime Complaint</h3>
+    <form>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ session['username'] }}" readonly>
+          </div>
+        </div>
+        <div class="col-md-6" >
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select class="form-control" id="category">
+                <option value="Theft">Theft</option>
+                <option value="Assault">Assault</option>
+                <option value="Burglary">Burglary</option>
+                <option value="Robbery">Robbery</option>
+                <option value="Fraud">Fraud</option>
+                <option value="Homicide">Homicide</option>
+                <option value="Kidnapping">Kidnapping</option>
+                <option value="Arson">Arson</option>
+                <option value="Drug offenses">Drug offenses</option>
+                <option value="Cybercrime">Cybercrime</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="officer">Incident File</label>
+            <input type="file" class="form-control" id="officer" name="officer" accept=".png, .jpg, .jpeg, .gif">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="datetime">Date and Time of Incident</label>
+            <input type="datetime-local" id="datetime" name="datetime" class="form-control">
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="description">Incident Mode/ Place</label>
+            <textarea class="form-control" id="address" name="address" placeholder="Where it happened?"></textarea>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="description">Incident Description</label>
+            <textarea class="form-control" id="description" name="description" placeholder="Briefly describe the incident"></textarea>
+          </div>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4"><button type="button" class="btn btn-success w-100" id="applicationbtn">Submit Complaint</button></div>
+        <div class="col-md-4"></div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% include 'footer.html' %}
+
+<script type="text/javascript">
+  let fname = ''
+   $('#officer').change(function () {
+                var formData = new FormData();
+                var file = $('#officer')[0].files[0];
+                formData.append('file', file);
+
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                         fname = data;
+                    },
+                    error: function () {
+                        console.log('Error uploading file');
+                    }
+                });
+            });
+    
+    $("#applicationbtn").click(function(){
+          var category = $("#category").val();
+          var officer = fname
+          var datetime = $("#datetime").val();
+          var address = $("#address").val();
+          var description = $("#description").val();
+
+
+            $.ajax({
+              url:"/addcomplaint", 
+              type: "post", 
+              dataType: 'json',
+              data: {"category":category, "officer":officer, "datetime":datetime, "address":address, "description":description},
+                success: function(output){
+                  if (output == "0"){
+                    alert('Error occured., Please try again')
+                  }else if (output == "1"){
+                    alert('Complaint Booked., Please check your mail for confirmation!')
+                  }
+                }
+              });
+        
+        });
+</script>

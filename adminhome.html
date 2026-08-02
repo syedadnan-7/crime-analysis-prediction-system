@@ -1,0 +1,68 @@
+{% include 'pageheader.html' %}
+
+  <div class="page-content page-container" id="page-content">
+    <div class="padding" style="border:1px solid gray; border-radius: 10px; width: 75% !important; top: 90% !important">
+        <h3 style="text-align: center;">Crime Complaint History</h3>
+        <div style="display: flex;justify-content: flex-end;">
+                  <input class="form-control bg-info" id="search" type="text" placeholder="Search.." style="width: 50%; margin-bottom: 10px">
+                </div>
+        <div style="max-height: 700px;
+    overflow-y: scroll;">
+        <table class="table table-bordered" style="">
+            <thead>
+              <tr>
+                <th>S. No</th>
+                <th>Crime ID</th>
+                <th>Evidence</th>
+                <th>Category</th>
+                <th>Date Time</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="myTable1">
+              
+            </tbody>
+          </table>
+        </div>
+       
+    </div>
+    </div>
+
+
+{% include 'footer.html' %}
+<script type="text/javascript">
+
+  search("")
+
+  $("#search").change(function(){
+    search($("#search").val())
+  })
+
+  function search(search){
+      $.ajax({
+        url:"/getadmincrimehistory", 
+        type: "post", 
+        dataType: 'json',
+        data: {"search":search},
+        beforeSend: function(){
+          $(".loader").show();
+        },
+        success: function(output) {
+            let appenddata = 0
+             for(var i=0; i<=output.length-1; i++){
+                  appenddata += `<tr>
+                  <td>`+(i+1)+`</td>
+                  <td>`+("CR-"+output[i]["crimeid"])+`</td>
+                  <td>`+output[i]["fname"]+`</td>
+                  <td>`+output[i]["category"]+`</td>
+                  <td>`+output[i]["datetime"]+`</td>
+                  <td>`+output[i]["description"]+`</td>
+                  </tr>`
+             }
+            $("#myTable1").html(appenddata)
+        }
+      });
+
+  }
+
+</script>

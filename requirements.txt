@@ -1,0 +1,9 @@
+Flask
+Flask-MySQLdb
+Flask-Session
+numpy
+pandas
+matplotlib
+scikit-learn
+wordcloud
+gunicorn

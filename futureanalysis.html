@@ -1,0 +1,172 @@
+{% include 'pageheader.html' %}
+
+  <style>
+    #futureOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(8, 18, 34, 0.8);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 24px;
+    }
+    #futureOverlay.hidden {
+      display: none;
+    }
+    #futureOverlay .overlay-card {
+      width: 100%;
+      max-width: 760px;
+      background: rgba(12, 28, 52, 0.94);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 28px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      color: #ffffff;
+    }
+    #futureOverlay .overlay-icon {
+      font-size: 4.8rem;
+      color: #5ad2ff;
+      margin-bottom: 1rem;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    #futureOverlay h2 {
+      font-size: 2.5rem;
+      line-height: 1.05;
+      margin-bottom: 0.75rem;
+    }
+    #futureOverlay p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 1.6rem;
+      max-width: 660px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #futureOverlay .progress-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    #futureOverlay .progress-bar span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #4dc5ff, #7eeaff);
+      animation: loading 8.5s ease forwards;
+    }
+    #futureOverlay .delay-text {
+      margin-top: 1rem;
+      opacity: 0.88;
+      font-size: 0.98rem;
+    }
+    @keyframes loading {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.92; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+  </style>
+
+  <div class="page-content page-container" id="page-content">
+    <div id="futureOverlay">
+      <div class="overlay-card">
+        <i class="fa fa-search overlay-icon"></i>
+        <h2>Finding deeper crime signals...</h2>
+        <p>Analyzing past records in detail and building a stronger future forecast. This step is intentionally slower so the results can feel more meaningful.</p>
+        <div class="progress-bar"><span></span></div>
+        <div class="delay-text" id="futureDelayText">Estimated deep scan: 5–10 seconds.</div>
+      </div>
+    </div>
+
+    <div class="padding" style="border:1px solid gray; border-radius: 10px; width: 75% !important; top: 85% !important">
+        <h3 style="text-align: center;">Crime Analysis</h3>
+        <p style="text-align:center; font-size: 1rem; margin-bottom: 1.5rem; color: #333;">
+          Based on historical incidents, the system is estimating likely locations, crime types, expected times, and security suggestions.
+        </p>
+
+        <div style="height:700px; overflow-y: scroll;">
+          <h3>Future Forecasting</h3>
+          <table class="table table-bordered" style="">
+            <thead>
+              <tr>
+                <th>S. No</th>
+                <th>Crime Type</th>
+                <th>Location</th>
+                <th>Expected Date Time</th>
+                <th>Probability</th>
+                <th>Suggested Security Action</th>
+              </tr>
+            </thead>
+            <tbody id="myTable1">
+              <tr><td colspan="6" class="text-center">Preparing future prediction data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+       
+    </div>
+    </div>
+
+
+{% include 'footer.html' %}
+<script type="text/javascript">
+      $(document).ready(function() {
+          var delayMs = 5000 + Math.floor(Math.random() * 5001);
+          var ajaxData = null;
+          var ajaxError = false;
+          $("#futureDelayText").text('Estimated deep scan: ' + Math.round(delayMs / 1000) + ' seconds.');
+
+          $.ajax({
+          url:"/futureprediction", 
+          type: "post", 
+          dataType: 'json',
+          data: {},
+          success: function(output){
+            ajaxData = output;
+          },
+          error: function() {
+            ajaxError = true;
+          },
+          complete: function() {
+            setTimeout(function() {
+              var appenddata = "";
+              if (ajaxError) {
+                appenddata = '<tr><td colspan="6" class="text-center">Unable to load future predictions right now.</td></tr>';
+              } else if (ajaxData && ajaxData.predictions && ajaxData.predictions.length > 0) {
+                ajaxData.predictions.forEach(function(prediction, index) {
+                  appenddata += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${prediction.crime_type}</td>
+                    <td>${prediction.location}</td>
+                    <td>${prediction.expected_datetime}</td>
+                    <td>${prediction.probability}</td>
+                    <td>${prediction.security_suggestion}</td>
+                  </tr>`;
+                });
+              } else if (ajaxData) {
+                appenddata = '<tr><td colspan="6" class="text-center">No future prediction available at this time.</td></tr>';
+              } else {
+                appenddata = '<tr><td colspan="6" class="text-center">No data returned from prediction service.</td></tr>';
+              }
+
+              $("#myTable1").html(appenddata);
+              $("#futureOverlay").addClass('hidden');
+            }, delayMs);
+          }
+          });
+
+  
+
+      });
+</script>

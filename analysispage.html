@@ -1,0 +1,40 @@
+{% include 'pageheader.html' %}
+
+  <div class="page-content page-container" id="page-content">
+    <div class="padding" style="border:1px solid gray; border-radius: 10px; width: 75% !important; top: 85% !important">
+        <h3 style="text-align: center;">Crime Analysis</h3>
+
+        <div style="height:700px; overflow-y: scroll;">
+          <h3>Crime Groups Based on Category</h3>
+          <img src="{{ url_for('static', filename='output/category.png') }}" alt="Your Image" height="500" width="100%">
+          <h3>Crime Groups Based on Time</h3>
+          <img src="{{ url_for('static', filename='output/datetime.png') }}" alt="Your Image" height="500" width="100%">
+          <h3>Crime Groups Based on Address</h3>
+          <img src="{{ url_for('static', filename='output/address.png') }}" alt="Your Image" height="500" width="100%">
+          <h3>Crime Groups Based on Reports</h3>
+          <img src="{{ url_for('static', filename='output/wordcloud.png') }}" alt="Your Image" height="500" width="100%">
+        </div>
+       
+    </div>
+    </div>
+
+
+{% include 'footer.html' %}
+<script type="text/javascript">
+
+      $.ajax({
+        url:"/getanalysis", 
+        type: "post", 
+        dataType: 'json',
+        data: {},
+        beforeSend: function(){
+          $(".loader").show();
+        },
+        success: function(output) {
+            
+        }
+      });
+
+  
+
+</script>

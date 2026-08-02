@@ -1,0 +1,52 @@
+{% include 'pageheader.html' %}
+
+  <div class="page-content page-container" id="page-content">
+    <div class="padding" style="border:1px solid gray; border-radius: 10px;">
+        <h3 style="text-align: center;">Crime Complaint History</h3>
+         <div style="max-height: 700px;
+    overflow-y: scroll;">
+        <table class="table table-bordered" style="">
+            <thead>
+              <tr>
+                <th>S. No</th>
+                <th>Crime ID</th>
+                <th>Category</th>
+                <th>Date Time</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="myTable1">
+              
+            </tbody>
+          </table>
+        </div>
+       
+    </div>
+    </div>
+
+
+{% include 'footer.html' %}
+<script type="text/javascript">
+  $.ajax({
+        url:"/getcrimehistory", 
+        type: "post", 
+        dataType: 'json',
+        data: {},
+        beforeSend: function(){
+          $(".loader").show();
+        },
+        success: function(output) {
+            let appenddata = 0
+             for(var i=0; i<=output.length-1; i++){
+                  appenddata += `<tr>
+                  <td>`+(i+1)+`</td>
+                  <td>`+("CR-"+output[i]["crimeid"])+`</td>
+                  <td>`+output[i]["category"]+`</td>
+                  <td>`+output[i]["datetime"]+`</td>
+                  <td>`+output[i]["description"]+`</td>
+                  </tr>`
+             }
+            $("#myTable1").html(appenddata)
+        }
+      });
+</script>
